@@ -5,14 +5,14 @@ const UserSchema = new mongoose.Schema(
     firstName: {
       type: mongoose.SchemaTypes.String,
       required: true,
-      min: 2,
-      max: 20,
+      minlength: 2,
+      maxlength: 20,
     },
     lastName: {
       type: mongoose.SchemaTypes.String,
       required: true,
-      min: 2,
-      max: 20,
+      minlength: 2,
+      maxlength: 20,
     },
     friends: {
       type: mongoose.SchemaTypes.Array,
@@ -20,14 +20,14 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: mongoose.SchemaTypes.String,
       required: true,
-      uniqe: true,
-      max: 50,
+      unique: true,
+      maxlength: 50,
     },
     password: {
       type: mongoose.SchemaTypes.String,
       required: true,
-      min: 8,
-      max: 30,
+      minlength: 8,
+      maxlength: 100,
     },
     picturePath: {
       type: mongoose.SchemaTypes.String,
@@ -41,16 +41,14 @@ const UserSchema = new mongoose.Schema(
     },
     viewedProfile: {
       type: mongoose.SchemaTypes.Number,
-      required: true,
       default: 0,
     },
     impressions: {
       type: mongoose.SchemaTypes.Number,
-      required: true,
       default: 0,
     },
-  }
-  // { timestamps: true }
+  },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("User", UserSchema);

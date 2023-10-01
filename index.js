@@ -6,7 +6,6 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
 // const path = require("path");
-// const { fileURLToPath } = require("url");
 
 const auth = require("./routes/auth");
 
@@ -30,12 +29,10 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("Connected to DB"))
+  // .then(() => console.log("Connected to DB"))
   .catch((err) => console.log(err));
 
 // Routes
 app.use("/auth", auth);
 
-app.listen(PORT, () => {
-  `App running on port: ${PORT}`;
-});
+app.listen(PORT);
