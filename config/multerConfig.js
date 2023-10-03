@@ -1,6 +1,12 @@
 const multer = require("multer");
 const path = require("path");
 
+// Filter function to check if the file is an image
+const imageFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) cb(null, true);
+  else cb(new Error("Only image files are allowed"), false);
+};
+
 // File Sotrage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -12,6 +18,6 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage, fileFilter: imageFilter });
 
 module.exports = { upload };

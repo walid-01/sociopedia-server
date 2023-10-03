@@ -68,19 +68,12 @@ const router = Router();
 // });
 
 router.post("/register", (req, res, next) => {
-  // Handle the Multer error
+  // Handling Multer error
   upload.single("picturePath")(req, res, async (err) => {
-    if (err instanceof multer.MulterError) {
-      // Handle Multer error here, e.g., send a specific error response
-      return res
-        .status(400)
-        .json({ error: "Invalid field name for file upload" });
-    } else if (err) {
-      // Handle other non-Multer errors
-      return res.status(500).json({ error: "Internal server error" });
-    }
+    if (err instanceof multer.MulterError)
+      return res.status(400).json({ error: err.message });
+    else if (err) return res.status(400).json({ error: err.message });
 
-    // Continue processing if the field name is correct
     try {
       const {
         firstName,
