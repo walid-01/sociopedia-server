@@ -39,6 +39,11 @@ router.post("/login", ensureNotAuthenticated, (req, res, next) => {
       // Handle unexpected errors
       return res.status(401).json({ error: err.message });
 
+    if (!user) {
+      // When no user is found (example: no password or email was included)
+      return res.status(401).json({ error: info.message });
+    }
+
     // If authentication succeeds, log the user in
     req.login(user, (err) => {
       if (err) {
