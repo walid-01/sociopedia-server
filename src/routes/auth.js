@@ -5,7 +5,7 @@ const passport = require("passport");
 // const jwt = require("jsonwebtoken");
 
 const { upload } = require("../config/multerConfig");
-const User = require("../models/User");
+const User = require("../database/models/User");
 
 const router = Router();
 
@@ -22,16 +22,6 @@ const ensureNotAuthenticated = (req, res, next) => {
   });
   // res.redirect("/home");
 };
-
-// router.post(
-//   "/login",
-//   ensureNotAuthenticated,
-//   passport.authenticate("local"),
-//   (req, res) => {
-//     console.log("Logged In");
-//     res.status(200).json(req.user);
-//   }
-// );
 
 router.post("/login", ensureNotAuthenticated, (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
