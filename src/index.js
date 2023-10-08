@@ -13,17 +13,6 @@ dotenv.config();
 
 const app = express();
 
-// app.use(
-//   session({
-//     secret: "ifgaf15agf4agafg743a2faf47afgh4jtr",
-//     resave: false,
-//     saveUninitialized: false,
-//     store: mongoStore.create({
-//       mongoUrl: process.env.MONGO_URI,
-//     }),
-//   })
-// );
-
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
