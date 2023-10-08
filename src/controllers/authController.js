@@ -3,7 +3,7 @@ const multer = require("multer");
 // const jwt = require("jsonwebtoken");
 
 const { upload } = require("../config/multerConfig");
-const User = require("../database/models/User");
+const User = require("../models/User");
 
 // const ensureNotAuthenticated = (req, res, next) => {
 //   if (!req.isAuthenticated()) {
@@ -19,8 +19,32 @@ const User = require("../database/models/User");
 //   // res.redirect("/home");
 // };
 
-exports.login = (req, res) => {
-  res.send("Add login");
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email) return res.status(400).json({ error: "Must include an email" });
+    if (!password)
+      return res.status(400).json({ error: "Must include a password" });
+    const userDB = await User.findOne({ email });
+    if (!userDB) {
+      console.log("No user with the specified email was found");
+      return res
+        .status(401)
+        .json({ error: "No user with the specified email was found" });
+    } else {
+      const isPasswordValid = await bcrypt.compare(password, userDB.password);
+      if (isPasswordValid) {
+        console.log("Authenticated successfuly");
+        return res.status(200).send(userDB);
+      } else {
+        console.log("Wrong password");
+        return res.json({ error: "Wrong password" });
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err });
+  }
 };
 
 exports.register =
@@ -45,7 +69,7 @@ exports.register =
 
         if (!password) {
           console.error("Missing password field");
-          return res.status(400).json({ error: ["Missing password field"] });
+          return res.status(400).json({ error: "Missing password field" });
         }
 
         const passwordHash = await bcrypt.hash(
@@ -72,7 +96,7 @@ exports.register =
       } catch (err) {
         if (err.code === 11000) {
           console.error("Email already exists");
-          return res.status(400).json({ error: ["Email already exists"] });
+          return res.status(400).json({ error: "Email already exists" });
         }
 
         if (err.name === "ValidationError") {
