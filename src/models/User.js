@@ -14,9 +14,13 @@ const UserSchema = new mongoose.Schema(
       minlength: 2,
       maxlength: 20,
     },
-    friends: {
-      type: mongoose.SchemaTypes.Array,
-    },
+    friends: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        status: { type: String, enum: ["sent", "received", "friend"] },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
     email: {
       type: mongoose.SchemaTypes.String,
       required: true,

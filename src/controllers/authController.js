@@ -87,7 +87,7 @@ exports.register =
           occupation,
         };
 
-        // Add automatically sing user after a successful register
+        // Add auto sign user after register
         await User.create(newUser);
         return res.status(201).json(newUser);
       } catch (err) {

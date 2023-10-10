@@ -7,8 +7,8 @@ const mongoose = require("mongoose");
 // const mongoStore = require("connect-mongo");
 // const session = require("express-session");
 
-const authRoute = require("./routes/auth");
-const userRoute = require("./routes/user");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 
 dotenv.config();
 
@@ -30,8 +30,8 @@ mongoose
   .catch((err) => console.log(err));
 
 // Routes
-app.use("/auth", authRoute);
-app.use("/user", userRoute);
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
