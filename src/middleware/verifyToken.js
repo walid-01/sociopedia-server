@@ -11,8 +11,9 @@ const verifyToken = async (req, res, next) => {
         process.env.ACCESS_TOKEN_SECRET
       );
       req.user = verified;
-      next();
+      return next();
     }
+    return res.status(403).json({ error: "Access Denied" });
   } catch (err) {
     if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError")
       return res.status(401).json({ error: err.message });

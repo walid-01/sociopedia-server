@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema(
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         status: { type: String, enum: ["sent", "received", "friend"] },
-        createdAt: { type: Date, default: Date.now },
+        createdAt: { type: Date, default: Date.now() },
       },
     ],
     email: {

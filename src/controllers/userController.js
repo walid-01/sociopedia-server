@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 // Read
 exports.getUser = async (req, res) => {
@@ -39,12 +40,13 @@ exports.getUserFrineds = async (req, res) => {
 // Friends Management
 exports.sendFriendRequest = async (req, res) => {
   try {
-    const { id, friendId } = req.params;
     const { userA, userB } = req;
+    const id = userA._id.toString();
+    const friendId = userB._id.toString();
 
     // Check if there is already an existing friend request or friendship
     const exisitingRelation = userA.friends.find(
-      (request) => request.user.toString() === friendId // && request.status === "friend"
+      (request) => request.user.toString() === friendId
     );
 
     if (exisitingRelation) {
@@ -81,10 +83,11 @@ exports.sendFriendRequest = async (req, res) => {
   }
 };
 
-exports.removeFriend = async (req, res) => {
+exports.removeRelation = async (req, res) => {
   try {
-    const { id, friendId } = req.params;
     const { userA, userB } = req;
+    const id = userA._id.toString();
+    const friendId = userB._id.toString();
 
     // Check if there is already an existing friend request or friendship
     const exisitingRelation = userA.friends.find(
@@ -117,8 +120,9 @@ exports.removeFriend = async (req, res) => {
 
 exports.acceptFriendRequest = async (req, res) => {
   try {
-    const { id, friendId } = req.params;
     const { userA, userB } = req;
+    const id = userA._id.toString();
+    const friendId = userB._id.toString();
 
     // Check if there the status is "received"
     const exisitingRelation = userA.friends.find(
@@ -135,14 +139,14 @@ exports.acceptFriendRequest = async (req, res) => {
     userA.friends.find((request) => {
       request.user.toString() === friendId && request.status === "received";
       request.status = "friend";
-      request.createdAt = Date.now;
+      request.createdAt = Date.now();
     });
 
     // Make userA friend with userB
     userB.friends.find((request) => {
       request.user.toString() === id && request.status === "sent";
       request.status = "friend";
-      request.createdAt = Date.now;
+      request.createdAt = Date.now();
     });
 
     // Save the changes to both users
@@ -155,19 +159,3 @@ exports.acceptFriendRequest = async (req, res) => {
     return res.status(500).json(err);
   }
 };
-
-// exports.cancelFriendRequest = async (req, res) => {
-//   try {
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).json(err);
-//   }
-// };
-
-// exports.deleteReceivedRequest = async (req, res) => {
-//   try {
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).json(err);
-//   }
-// };

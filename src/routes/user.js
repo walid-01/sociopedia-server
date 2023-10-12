@@ -3,10 +3,8 @@ const {
   getUser,
   getUserFrineds,
   sendFriendRequest,
-  removeFriend,
-  cancelFriendRequest,
+  removeRelation,
   acceptFriendRequest,
-  deleteReceivedRequest,
 } = require("../controllers/userController");
 const verifyToken = require("../middleware/verifyToken");
 const validateFriendAction = require("../middleware/validateFriendAction");
@@ -17,13 +15,10 @@ const router = Router();
 router.get("/:id", verifyToken, getUser);
 router.get("/:id/friends", verifyToken, getUserFrineds);
 
-// // Update
-// router.patch("/:id/:friendId", verifyToken, addRemoveFriend);
-
 // Friends Management
 // Send a friend request
 router.post(
-  "/:id/send-friend-request/:friendId",
+  "/send-friend-request/:friendId",
   verifyToken,
   validateFriendAction,
   sendFriendRequest
@@ -31,34 +26,18 @@ router.post(
 
 // Remove a friend
 router.delete(
-  "/:id/remove-friend/:friendId",
+  "/remove-relation/:friendId",
   verifyToken,
   validateFriendAction,
-  removeFriend
+  removeRelation
 );
 
 // Accept a received friend request
 router.post(
-  "/:id/accept-friend-request/:friendId",
+  "/accept-friend-request/:friendId",
   verifyToken,
   validateFriendAction,
   acceptFriendRequest
 );
-
-// // Cancel a pending friend request
-// router.delete(
-//   "/:id/cancel-friend-request/:friendId",
-//   verifyToken,
-//   validateFriendAction,
-//   cancelFriendRequest
-// );
-
-// // Delete a received friend request
-// router.delete(
-//   "/:id/delete-received-request/:requestId",
-//   verifyToken,
-//   validateFriendAction,
-//   deleteReceivedRequest
-// );
 
 module.exports = router;
