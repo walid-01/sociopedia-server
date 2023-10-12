@@ -37,33 +37,25 @@ exports.getUserFrineds = async (req, res) => {
 };
 
 // Friends Management
-
 exports.sendFriendRequest = async (req, res) => {
   try {
     const { id, friendId } = req.params;
-
-    if (
-      !mongoose.Types.ObjectId.isValid(id) ||
-      !mongoose.Types.ObjectId.isValid(friendId)
-    ) {
-      return res.status(400).json({ error: "Invalid user ID" });
-    }
-
-    // Check if the users with provided IDs exist
-    const userA = await User.findById(id);
-    const userB = await User.findById(friendId);
-
-    if (!userA || !userB) {
-      return res.status(404).json({ error: "One or both users not found" });
-    }
+    const { userA, userB } = req;
 
     // Check if there is already an existing friend request or friendship
-    const existingFriendRequest = userA.friends.find(
-      (request) => request.user.toString() === friendId // && request.status === "sent"
+    const exisitingRelation = userA.friends.find(
+      (request) => request.user.toString() === friendId // && request.status === "friend"
     );
 
-    if (existingFriendRequest) {
-      return res.status(400).json({ error: "Friend request already sent" });
+    if (exisitingRelation) {
+      if (exisitingRelation.status === "sent")
+        return res.status(400).json({ error: "Friend request already sent" });
+      else if (exisitingRelation.status === "friend")
+        return res.status(400).json({ error: "You are already friends" });
+      else if (exisitingRelation.status === "received")
+        return res
+          .status(400)
+          .json({ error: "User already sent you a request" });
     }
 
     // Add friend request to User A's friends
@@ -91,30 +83,32 @@ exports.sendFriendRequest = async (req, res) => {
 
 exports.removeFriend = async (req, res) => {
   try {
-    const { id, friendId } = req.body;
+    const { id, friendId } = req.params;
+    const { userA, userB } = req;
 
-    if (
-      !mongoose.Types.ObjectId.isValid(id) ||
-      !mongoose.Types.ObjectId.isValid(friendId)
-    ) {
-      return res.status(400).json({ error: "Invalid ID" });
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-};
+    // Check if there is already an existing friend request or friendship
+    const exisitingRelation = userA.friends.find(
+      (request) => request.user.toString() === friendId
+    );
 
-exports.cancelFriendRequest = async (req, res) => {
-  try {
-    const { id, friendId } = req.body;
+    if (!exisitingRelation)
+      return res.status(400).json({ error: "Already no relation with user" });
 
-    if (
-      !mongoose.Types.ObjectId.isValid(id) ||
-      !mongoose.Types.ObjectId.isValid(friendId)
-    ) {
-      return res.status(400).json({ error: "Invalid ID" });
-    }
+    // Remove userB from userA friends
+    userA.friends = userA.friends.filter(
+      (request) => request.user.toString() !== friendId
+    );
+
+    // Remove userA from userB friends
+    userB.friends = userB.friends.filter(
+      (request) => request.user.toString() !== id
+    );
+
+    // Save the changes to both users
+    await userA.save();
+    await userB.save();
+
+    res.status(200).json({ message: "Removed successfully" });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
@@ -123,32 +117,57 @@ exports.cancelFriendRequest = async (req, res) => {
 
 exports.acceptFriendRequest = async (req, res) => {
   try {
-    const { id, friendId } = req.body;
+    const { id, friendId } = req.params;
+    const { userA, userB } = req;
 
-    if (
-      !mongoose.Types.ObjectId.isValid(id) ||
-      !mongoose.Types.ObjectId.isValid(friendId)
-    ) {
-      return res.status(400).json({ error: "Invalid ID" });
-    }
+    // Check if there the status is "received"
+    const exisitingRelation = userA.friends.find(
+      (request) =>
+        request.user.toString() === friendId && request.status === "received"
+    );
+
+    if (!exisitingRelation)
+      return res.status(400).json({ error: "No request received from user" });
+
+    // console.log(userA.friends);
+
+    // Make userB friend with userA
+    userA.friends.find((request) => {
+      request.user.toString() === friendId && request.status === "received";
+      request.status = "friend";
+      request.createdAt = Date.now;
+    });
+
+    // Make userA friend with userB
+    userB.friends.find((request) => {
+      request.user.toString() === id && request.status === "sent";
+      request.status = "friend";
+      request.createdAt = Date.now;
+    });
+
+    // Save the changes to both users
+    await userA.save();
+    await userB.save();
+
+    res.status(200).json({ message: "You are now friends" });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
   }
 };
 
-exports.deleteReceivedRequest = async (req, res) => {
-  try {
-    const { id, friendId } = req.body;
+// exports.cancelFriendRequest = async (req, res) => {
+//   try {
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).json(err);
+//   }
+// };
 
-    if (
-      !mongoose.Types.ObjectId.isValid(id) ||
-      !mongoose.Types.ObjectId.isValid(friendId)
-    ) {
-      return res.status(400).json({ error: "Invalid ID" });
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-};
+// exports.deleteReceivedRequest = async (req, res) => {
+//   try {
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).json(err);
+//   }
+// };
