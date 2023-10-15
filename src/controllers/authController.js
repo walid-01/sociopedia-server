@@ -5,20 +5,6 @@ const jwt = require("jsonwebtoken");
 const { upload } = require("../config/multerConfig");
 const User = require("../models/User");
 
-// const ensureNotAuthenticated = (req, res, next) => {
-//   if (!req.isAuthenticated()) {
-//     // User is not authenticated, proceed to the next middleware/route handler.
-//     return next();
-//   }
-
-//   // User is authenticated, redirect them to /home.
-//   res.status(500).json({
-//     error:
-//       "Redirecting to home is not implemented yet (redirecting because a user is already logged in)",
-//   });
-//   // res.redirect("/home");
-// };
-
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -89,7 +75,12 @@ exports.register =
 
         // Add auto sign user after register
         await User.create(newUser);
-        return res.status(201).json(newUser);
+        const token = jwt.sign(
+          { id: newUser._id },
+          process.env.ACCESS_TOKEN_SECRET
+        );
+
+        return res.status(201).json({ token, newUser });
       } catch (err) {
         if (err.code === 11000)
           return res.status(400).json({ error: "Email already exists" });

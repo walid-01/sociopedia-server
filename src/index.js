@@ -9,6 +9,9 @@ const mongoose = require("mongoose");
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const postRoutes = require("./routes/post");
+
+const verifyToken = require("./middleware/verifyToken");
 
 dotenv.config();
 
@@ -31,9 +34,8 @@ mongoose
 
 // Routes
 app.use("/auth", authRoutes);
-app.use("/user", userRoutes);
+app.use("/user", verifyToken, userRoutes);
+app.use("/post", verifyToken, postRoutes);
 
 const port = process.env.PORT || 3001;
-app.listen(port, () => {
-  // console.log(`App listening on port: ${port}`);
-});
+app.listen(port) /*, () => console.log(`App listening on port: ${port}`))*/;
