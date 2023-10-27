@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { upload } = require("../config/multerConfig");
 const User = require("../models/User");
 
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email) return res.status(400).json({ error: "No email field" });
@@ -31,69 +31,68 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.register =
-  ("/register",
-  (req, res, next) => {
-    // Handling Multer error
-    upload.single("picturePath")(req, res, async (err) => {
-      if (err instanceof multer.MulterError)
-        return res.status(400).json({ error: err.message });
-      else if (err) return res.status(400).json({ error: err.message });
+const register = (req, res) => {
+  // Handling Multer error
+  upload.single("picture")(req, res, async (err) => {
+    if (err instanceof multer.MulterError)
+      return res.status(400).json({ error: err.message });
+    else if (err) return res.status(500).json({ error: err });
 
-      try {
-        const {
-          firstName,
-          lastName,
-          friends,
-          email,
-          password,
-          location,
-          occupation,
-        } = req.body;
+    try {
+      const {
+        firstName,
+        lastName,
+        friends,
+        email,
+        password,
+        location,
+        occupation,
+      } = req.body;
 
-        if (!password)
-          return res.status(400).json({ error: "Missing password field" });
+      if (!password)
+        return res.status(400).json({ error: "Missing password field" });
 
-        const passwordHash = await bcrypt.hash(
-          password,
-          await bcrypt.genSalt()
-        );
+      const passwordHash = await bcrypt.hash(password, await bcrypt.genSalt());
 
-        const newUser = {
-          firstName,
-          lastName,
-          friends,
-          email,
-          password: passwordHash,
-          picturePath:
-            req.file && req.file.fieldname === "picturePath"
-              ? req.file.filename
-              : "",
-          location,
-          occupation,
-        };
+      const newUser = {
+        firstName,
+        lastName,
+        friends,
+        email,
+        password: passwordHash,
+        picturePath:
+          req.file && req.file.fieldname === "picture" ? req.file.filename : "",
+        location,
+        occupation,
+      };
 
-        // Add auto sign user after register
-        await User.create(newUser);
-        const token = jwt.sign(
-          { id: newUser._id },
-          process.env.ACCESS_TOKEN_SECRET
-        );
+      await User.create(newUser);
 
-        return res.status(201).json({ token, newUser });
-      } catch (err) {
-        if (err.code === 11000)
-          return res.status(400).json({ error: "Email already exists" });
+      const userDB = await User.findOne({ email });
+      const token = jwt.sign(
+        { id: userDB._id },
+        process.env.ACCESS_TOKEN_SECRET
+      );
 
-        if (err.name === "ValidationError")
-          return res.status(400).json({
-            error: Object.values(err.errors).map((error) => error.message),
-          });
+      return res.status(201).json({ token, userDB });
+    } catch (err) {
+      if (err.code === 11000)
+        return res.status(400).json({ error: "Email already exists" });
 
-        console.error(err);
-        return res.status(500).json({
+      if (err.name === "ValidationError")
+        return res.status(400).json({
           error: Object.values(err.errors).map((error) => error.message),
         });
-      }
-    });
+
+      console.error(err);
+      return res.status(500).json({
+        error: Object.values(err.errors).map((error) => error.message),
+      });
+    }
   });
+};
+
+module.exports = {
+  register,
+  login,
+};

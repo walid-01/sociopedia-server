@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 
 // Read
 exports.getUser = async (req, res) => {

@@ -12,6 +12,7 @@ const userRoutes = require("./routes/user");
 const postRoutes = require("./routes/post");
 
 const verifyToken = require("./middleware/verifyToken");
+const { checkNotAuthenticated } = require("./middleware/checkNotAuthenticated");
 
 dotenv.config();
 
@@ -33,7 +34,7 @@ mongoose
   .catch((err) => console.log(err));
 
 // Routes
-app.use("/auth", authRoutes);
+app.use("/auth", checkNotAuthenticated, authRoutes);
 app.use("/user", verifyToken, userRoutes);
 app.use("/post", verifyToken, postRoutes);
 

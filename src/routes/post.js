@@ -2,11 +2,15 @@ const { Router } = require("express");
 const router = Router();
 
 const {
+  createPost,
   getFeedPosts,
   getUserPosts,
   likePost,
   dislikePost,
 } = require("../controllers/postController");
+
+// Create
+router.post("/create", createPost);
 
 // Read
 router.get("/", getFeedPosts);
