@@ -1,5 +1,5 @@
 const multer = require("multer");
-const { upload } = require("../config/multerConfig");
+const { upload } = require("../middleware/imageUploadAvatar");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const jwt = require("jsonwebtoken");

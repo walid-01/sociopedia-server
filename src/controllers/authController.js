@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const jwt = require("jsonwebtoken");
 
-const { upload } = require("../config/multerConfig");
+const { uploadAvatar } = require("../middleware/imageUploadAvatar");
 const User = require("../models/User");
 
 const login = async (req, res) => {
@@ -33,7 +33,7 @@ const login = async (req, res) => {
 
 const register = (req, res) => {
   // Handling Multer error
-  upload.single("picture")(req, res, async (err) => {
+  uploadAvatar.single("picture")(req, res, async (err) => {
     if (err instanceof multer.MulterError)
       return res.status(400).json({ error: err.message });
     else if (err) return res.status(500).json({ error: err });
