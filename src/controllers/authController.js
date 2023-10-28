@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const jwt = require("jsonwebtoken");
 
-const { upload } = require("../config/multerConfig");
+const { avatarUpload } = require("../middleware/imageUpload");
 const User = require("../models/User");
 
 const login = async (req, res) => {
@@ -33,7 +33,7 @@ const login = async (req, res) => {
 
 const register = (req, res) => {
   // Handling Multer error
-  upload.single("picture")(req, res, async (err) => {
+  avatarUpload.single("picture")(req, res, async (err) => {
     if (err instanceof multer.MulterError)
       return res.status(400).json({ error: err.message });
     else if (err) return res.status(500).json({ error: err });
@@ -53,6 +53,8 @@ const register = (req, res) => {
         return res.status(400).json({ error: "Missing password field" });
 
       const passwordHash = await bcrypt.hash(password, await bcrypt.genSalt());
+
+      console.log(req.file, req.file && req.file.fieldname === "picture");
 
       const newUser = {
         firstName,

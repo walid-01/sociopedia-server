@@ -1,12 +1,12 @@
 const multer = require("multer");
-const { upload } = require("../config/multerConfig");
+const { upload } = require("../middleware/imageUpload");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const jwt = require("jsonwebtoken");
 
 // Create
 exports.createPost = async (req, res) => {
-  upload.single("picturePath")(req, res, async (err) => {
+  upload.single("picture")(req, res, async (err) => {
     if (err instanceof multer.MulterError)
       return res.status(400).json({ multerError: err.message });
     else if (err) return res.status(500).json({ multerError: err });
