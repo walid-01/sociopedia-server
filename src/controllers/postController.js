@@ -16,7 +16,7 @@ exports.createPost = async (req, res) => {
     try {
       const token = req.header("Authorization");
       const decodedId = jwt.verify(
-        token.slice(7, token.length).trimLeft(),
+        token.slice(7, token.length),
         process.env.ACCESS_TOKEN_SECRET
       ).id;
       const user = await User.findById(decodedId);
@@ -27,12 +27,11 @@ exports.createPost = async (req, res) => {
         lastName: user.lastName,
         description: req.body.description,
         picutrePath: req.file.filename,
-        // picturePath: req.file && req.file.fieldname === "picture" ? req.file.filename : "",
       });
 
       await newPost.save();
 
-      // const post = await Post.find(); //1:28
+      // const post = await Post.find(); //01:28
       // return res.status(201).json(post);
 
       return res.status(201).json(newPost);
@@ -55,7 +54,7 @@ exports.getFeedPosts = async (req, res) => {
   try {
     const token = req.header("Authorization");
     const decodedId = jwt.verify(
-      token.slice(7, token.length).trimLeft(),
+      token.slice(7, token.length),
       process.env.ACCESS_TOKEN_SECRET
     ).id;
     const user = await User.findById(decodedId);
@@ -65,8 +64,8 @@ exports.getFeedPosts = async (req, res) => {
       .map((friend) => friend.user);
 
     const feedPosts = await Post.find({ userId: { $in: friendIds } }).sort({
-      createdAt: -1,
-    }); // Sort by most recent posts
+      createdAt: -1, // Sort by most recent posts
+    });
 
     res.status(200).json(feedPosts);
   } catch (err) {
@@ -77,6 +76,14 @@ exports.getFeedPosts = async (req, res) => {
 
 exports.getUserPosts = async (req, res) => {
   try {
+    // const { userId } = req.params;
+    // const user = await User.findById(userId);
+
+    const feedPosts = await Post.find({ userId: req.params.userId }).sort({
+      createdAt: -1, // Sort by most recent posts
+    });
+
+    return res.status(200).json(feedPosts);
   } catch (err) {
     console.error(err);
     res.status(500).json(err);
@@ -85,6 +92,22 @@ exports.getUserPosts = async (req, res) => {
 
 exports.likePost = async (req, res) => {
   try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+
+    const token = req.header("Authorization");
+    const decodedId = jwt.verify(
+      token.slice(7, token.length),
+      process.env.ACCESS_TOKEN_SECRET
+    ).id;
+
+    if (post.likes.includes(decodedId))
+      return res.status(400).json({ error: "Already liked" });
+
+    post.likes.push(decodedId);
+    await post.save();
+
+    return res.status(200).json({ message: "Liked successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json(err);
@@ -93,6 +116,22 @@ exports.likePost = async (req, res) => {
 
 exports.dislikePost = async (req, res) => {
   try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+
+    const token = req.header("Authorization");
+    const decodedId = jwt.verify(
+      token.slice(7, token.length),
+      process.env.ACCESS_TOKEN_SECRET
+    ).id;
+
+    if (!post.likes.includes(decodedId))
+      return res.status(400).json({ error: "Already not liked" });
+
+    post.likes = post.likes.filter((user) => user._id.toString() !== decodedId);
+    await post.save();
+
+    return res.status(200).json({ message: "Unliked successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json(err);

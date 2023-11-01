@@ -17,7 +17,7 @@ router.get("/", getFeedPosts);
 router.get("/:userId/posts", getUserPosts);
 
 // Update
-router.patch("/:id/like", likePost);
-router.patch("/:id/dislike", dislikePost);
+router.patch("/:postId/like", likePost);
+router.patch("/:postId/dislike", dislikePost);
 
 module.exports = router;

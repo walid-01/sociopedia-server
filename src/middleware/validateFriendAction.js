@@ -6,7 +6,7 @@ const validateUser = async (req, res, next) => {
   const { friendId } = req.params;
   const token = req.header("Authorization");
   const decodedToken = jwt.verify(
-    token.slice(7, token.length).trimLeft(),
+    token.slice(7, token.length),
     process.env.ACCESS_TOKEN_SECRET
   );
   const id = decodedToken.id;
