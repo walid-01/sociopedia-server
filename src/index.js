@@ -4,12 +4,11 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
-// const mongoStore = require("connect-mongo");
-// const session = require("express-session");
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const postRoutes = require("./routes/post");
+const errorHandler = require("./middleware/errorHandler");
 
 const verifyToken = require("./middleware/verifyToken");
 const { checkNotAuthenticated } = require("./middleware/checkNotAuthenticated");
@@ -37,6 +36,8 @@ mongoose
 app.use("/auth", checkNotAuthenticated, authRoutes);
 app.use("/user", verifyToken, userRoutes);
 app.use("/post", verifyToken, postRoutes);
+
+app.use(errorHandler);
 
 const port = process.env.PORT || 3001;
 app.listen(port) /*, () => console.log(`App listening on port: ${port}`))*/;

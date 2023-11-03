@@ -6,7 +6,7 @@ const { avatarImgUpload } = require("../middleware/avatarImgUpload");
 
 const User = require("../models/User");
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email) return res.status(400).json({ error: "No email field" });
@@ -27,17 +27,14 @@ const login = async (req, res) => {
     delete userDB.password;
     return res.status(200).json({ token, userDB });
   } catch (err) {
-    console.error(err);
-    res.status(500).json(err);
+    return next(err);
   }
 };
 
-const register = (req, res) => {
-  // Handling Multer error
+const register = (req, res, next) => {
   avatarImgUpload.single("picture")(req, res, async (err) => {
-    if (err instanceof multer.MulterError)
-      return res.status(400).json({ error: err.message });
-    else if (err) return res.status(500).json({ error: err });
+    // Handling Multer error
+    if (err) return res.status(400).json({ error: err.message });
 
     try {
       const {
@@ -55,8 +52,8 @@ const register = (req, res) => {
 
       const passwordHash = await bcrypt.hash(password, await bcrypt.genSalt());
 
-      console.log(req.file);
-      console.log(req.file.fieldname);
+      // console.log(req.file);
+      // console.log(req.file.fieldname);
 
       const newUser = {
         firstName,
@@ -80,18 +77,7 @@ const register = (req, res) => {
 
       return res.status(201).json({ token, userDB });
     } catch (err) {
-      if (err.code === 11000)
-        return res.status(400).json({ error: "Email already exists" });
-
-      if (err.name === "ValidationError")
-        return res.status(400).json({
-          error: Object.values(err.errors).map((error) => error.message),
-        });
-
-      console.error(err);
-      return res.status(500).json({
-        error: Object.values(err.errors).map((error) => error.message),
-      });
+      return next(err);
     }
   });
 };

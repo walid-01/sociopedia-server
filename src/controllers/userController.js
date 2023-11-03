@@ -2,7 +2,7 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 
 // Read
-exports.getUser = async (req, res) => {
+exports.getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
@@ -10,11 +10,11 @@ exports.getUser = async (req, res) => {
 
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json(err);
+    return next(err);
   }
 };
 
-exports.getUserFrineds = async (req, res) => {
+exports.getUserFrineds = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -31,13 +31,12 @@ exports.getUserFrineds = async (req, res) => {
 
     res.status(200).json(user.friends);
   } catch (err) {
-    console.log(err);
-    res.status(500).json(err);
+    return next(err);
   }
 };
 
 // Friends Management
-exports.sendFriendRequest = async (req, res) => {
+exports.sendFriendRequest = async (req, res, next) => {
   try {
     const { userA, userB } = req;
     const id = userA._id.toString();
@@ -77,12 +76,11 @@ exports.sendFriendRequest = async (req, res) => {
 
     res.status(200).json({ message: "Friend request sent successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    return next(err);
   }
 };
 
-exports.removeRelation = async (req, res) => {
+exports.removeRelation = async (req, res, next) => {
   try {
     const { userA, userB } = req;
     const id = userA._id.toString();
@@ -112,12 +110,11 @@ exports.removeRelation = async (req, res) => {
 
     res.status(200).json({ message: "Removed successfully" });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
+    return next(err);
   }
 };
 
-exports.acceptFriendRequest = async (req, res) => {
+exports.acceptFriendRequest = async (req, res, next) => {
   try {
     const { userA, userB } = req;
     const id = userA._id.toString();
@@ -154,7 +151,6 @@ exports.acceptFriendRequest = async (req, res) => {
 
     res.status(200).json({ message: "You are now friends" });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
+    return next(err);
   }
 };

@@ -8,6 +8,8 @@ const {
   getUserPosts,
   likePost,
   dislikePost,
+  addComment,
+  removeComment,
 } = require("../controllers/postController");
 
 // Create
@@ -20,6 +22,7 @@ router.get("/:userId/posts", getUserPosts);
 // Update
 router.patch("/:postId/like", validateUser, likePost);
 router.patch("/:postId/dislike", validateUser, dislikePost);
-//ADD Comment
+router.patch("/:postId/comment", validateUser, addComment);
+router.patch("/:postId/remove-comment", validateUser, removeComment);
 
 module.exports = router;
