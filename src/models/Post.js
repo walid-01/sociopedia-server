@@ -19,15 +19,11 @@ const PostSchema = new mongoose.Schema(
       minlength: 2,
       maxlength: 20,
     },
-    // location: {
-    //   type: mongoose.SchemaTypes.String,
-    //   maxlength: 30,
-    // },
     description: {
       type: mongoose.SchemaTypes.String,
       maxlength: 100,
     },
-    picutrePath: {
+    picturePath: {
       type: mongoose.SchemaTypes.String,
       required: true,
     },

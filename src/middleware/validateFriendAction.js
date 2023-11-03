@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
-const validateUser = async (req, res, next) => {
+const validateFriendAction = async (req, res, next) => {
   const { friendId } = req.params;
   const token = req.header("Authorization");
   const decodedToken = jwt.verify(
@@ -36,4 +36,4 @@ const validateUser = async (req, res, next) => {
   next();
 };
 
-module.exports = validateUser;
+module.exports = validateFriendAction;

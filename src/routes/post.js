@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const router = Router();
+const validateUser = require("../middleware/validateUser");
 
 const {
   createPost,
@@ -10,14 +11,15 @@ const {
 } = require("../controllers/postController");
 
 // Create
-router.post("/create", createPost);
+router.post("/create", validateUser, createPost);
 
 // Read
-router.get("/", getFeedPosts);
+router.get("/", validateUser, getFeedPosts);
 router.get("/:userId/posts", getUserPosts);
 
 // Update
-router.patch("/:postId/like", likePost);
-router.patch("/:postId/dislike", dislikePost);
+router.patch("/:postId/like", validateUser, likePost);
+router.patch("/:postId/dislike", validateUser, dislikePost);
+//ADD Comment
 
 module.exports = router;
