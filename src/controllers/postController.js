@@ -102,12 +102,13 @@ exports.dislikePost = async (req, res, next) => {
     if (!post) return res.status(404).json({ error: "No post found" });
 
     const { userId } = req;
-    // If the current user already not liked the -> post throw an error
+
+    // If the current user already not liked the post, throw an error
     if (!post.likes.includes(userId))
       return res.status(400).json({ error: "Already not liked" });
 
     // Removing the current user from the post's likes
-    post.likes.filter((user) => user._id.toString() !== userId);
+    post.likes.pull(userId);
     await post.save();
 
     return res.status(200).json({ message: "Unliked successfully" });

@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 // Read
 exports.getUser = async (req, res, next) => {
@@ -30,6 +31,28 @@ exports.getUserFrineds = async (req, res, next) => {
     if (!user) return res.status(404).json({ error: "No user found" });
 
     res.status(200).json(user.friends);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// Read all users excluding the current user
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    // Get the user ID from the decoded token
+    const token = req.headers.authorization;
+    const decodedToken = jwt.verify(
+      token.slice(7, token.length),
+      process.env.ACCESS_TOKEN_SECRET
+    );
+    const currentUserId = decodedToken.id;
+
+    // Fetch all users excluding the current user
+    const users = await User.find(
+      { _id: { $ne: currentUserId } },
+      "_id firstName lastName occupation location picturePath"
+    );
+    res.status(200).json(users);
   } catch (err) {
     return next(err);
   }

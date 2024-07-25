@@ -20,9 +20,9 @@ router.get("/", validateUser, getFeedPosts);
 router.get("/:userId/posts", getUserPosts);
 
 // Update
-router.patch("/:postId/like", validateUser, likePost);
-router.patch("/:postId/dislike", validateUser, dislikePost);
-router.patch("/:postId/comment", validateUser, addComment);
-router.patch("/:postId/remove-comment", validateUser, removeComment);
+router.post("/:postId/like", validateUser, likePost);
+router.post("/:postId/dislike", validateUser, dislikePost);
+router.post("/:postId/comment", validateUser, addComment);
+router.post("/:postId/remove-comment", validateUser, removeComment);
 
 module.exports = router;

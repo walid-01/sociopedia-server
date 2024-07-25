@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const path = require("path");
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
@@ -31,6 +32,8 @@ mongoose
   })
   // .then(() => console.log("Connected to DB"))
   .catch((err) => console.log(err));
+
+app.use("/public", express.static(path.join(__dirname, "../public")));
 
 // Routes
 app.use("/auth", checkNotAuthenticated, authRoutes);

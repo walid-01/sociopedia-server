@@ -5,12 +5,14 @@ const {
   sendFriendRequest,
   removeRelation,
   acceptFriendRequest,
+  getAllUsers,
 } = require("../controllers/userController");
 const validateFriendAction = require("../middleware/validateFriendAction");
 
 const router = Router();
 
 // Read
+router.get("/all", getAllUsers);
 router.get("/:id", getUser);
 router.get("/:id/friends", getUserFrineds);
 

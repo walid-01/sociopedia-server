@@ -26,9 +26,9 @@ const storage = multer.diskStorage({
 const postImgUpload = multer({
   storage,
   fileFilter: imageFilter, // Use the custom imageFilter
-  limits: {
-    fileSize: 1024 * 1024,
-  },
+  // limits: {
+  //   fileSize: 1024 * 1024,
+  // },
 });
 
 module.exports = { postImgUpload };
